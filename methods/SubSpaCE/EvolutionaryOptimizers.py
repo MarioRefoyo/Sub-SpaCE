@@ -1,3 +1,4 @@
+import copy
 from abc import ABC, abstractmethod
 import random
 import numpy as np
@@ -30,8 +31,7 @@ class EvolutionaryOptimizer(ABC):
 
         self.prediction_func = prediction_func
         self.max_iter = max_iter
-        self.init_pct = init_pct
-        self.fitness_evolution = []
+        self.original_init_pct = init_pct
 
         self.feature_axis = feature_axis
 
@@ -48,6 +48,7 @@ class EvolutionaryOptimizer(ABC):
         self.model = model
         self.outlier_calculator = outlier_calculator
         self.importance_heatmap = importance_heatmap
+        self.init_pct = copy.deepcopy(self.original_init_pct)
         self.init_population(self.importance_heatmap)
 
         # Get dimensionality attributes
@@ -167,11 +168,15 @@ class EvolutionaryOptimizer(ABC):
         best_score = -100
         best_sample = None
         best_classification_prob = 0
+        fitness_evolution = []
+        cf_evolution = []
 
         # Compute initial fitness
         fitness, _ = self.compute_fitness()
         i = np.argsort(fitness)[-1]
-        self.fitness_evolution.append(fitness[i])
+        fitness_evolution.append(fitness[i])
+        best_cf = self.get_counterfactuals(self.x_orig, self.nun_example, np.expand_dims(self.population[i], axis=0))
+        cf_evolution.append(np.squeeze(best_cf, axis=0))
 
         # Run evolution
         iteration = 0
@@ -204,7 +209,9 @@ class EvolutionaryOptimizer(ABC):
                 print('what???')
             fitness, class_probs = self.compute_fitness()
             i = np.argsort(fitness)[-1]
-            self.fitness_evolution.append(fitness[i])
+            fitness_evolution.append(fitness[i])
+            best_cf = self.get_counterfactuals(self.x_orig, self.nun_example, np.expand_dims(self.population[i], axis=0))
+            cf_evolution.append(np.squeeze(best_cf, axis=0))
             if fitness[i] > best_score:
                 best_score = fitness[i]
                 best_sample = self.population[i]
@@ -227,10 +234,12 @@ class EvolutionaryOptimizer(ABC):
                 if best_classification_prob > 0.5:
                     break
                 else:
+                    iteration = 0
+                    self.init_pct = self.init_pct + 0.2
                     self.init_population(self.importance_heatmap)
                     fitness, class_probs = self.compute_fitness()
 
-        return best_sample, best_classification_prob
+        return best_sample, best_classification_prob, fitness_evolution, cf_evolution
 
 
 class BasicEvolutionaryOptimizer(EvolutionaryOptimizer):

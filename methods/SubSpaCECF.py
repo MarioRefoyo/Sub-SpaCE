@@ -41,7 +41,7 @@ class SubSpaCECF(CounterfactualMethod):
         )
 
         # Calculate counterfactual
-        found_counterfactual_mask, desired_class_prob = self.optimizer.optimize()
+        found_counterfactual_mask, desired_class_prob, fitness_evolution, cf_evolution = self.optimizer.optimize()
         if found_counterfactual_mask is None:
             print(f'Failed to converge for sample')
             x_cf = copy.deepcopy(np.expand_dims(x_orig, axis=0))
@@ -50,6 +50,6 @@ class SubSpaCECF(CounterfactualMethod):
                 x_orig, nun_example, np.expand_dims(found_counterfactual_mask, axis=0)
             )
 
-        result = {'cf': x_cf, 'fitness_evolution': self.optimizer.fitness_evolution}
+        result = {'cf': x_cf, 'fitness_evolution': fitness_evolution, 'cf_evolution': cf_evolution}
 
         return result

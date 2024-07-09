@@ -13,7 +13,8 @@ from experiments.results.results_concatenator import concatenate_result_files
 
 from methods.SubSpaCECF import SubSpaCECF
 
-DATASETS = ['CBF', 'chinatown', 'coffee', 'gunpoint', 'ECG200']
+# DATASETS = ['CBF', 'chinatown', 'coffee', 'gunpoint', 'ECG200']
+DATASETS = ['ECG200']
 MULTIPROCESSING = True
 I_START = 0
 THREAD_SAMPLES = 5
