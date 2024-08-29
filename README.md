@@ -7,4 +7,4 @@ Watcher et al. Then run `./experiments/ab_cf.py` and `./experiments/subspace.py`
 The generated counterfactuals are stored in `./experiments/results`. The metrics, as well as the tables and figures can 
 be reproduced by running `./experiments/evaluation/result_tables_and_visualizations.ipynb`.
 
-The implementation of Sub-SpaCE can be found in `./methods/SubSpaCE.py`.
+The implementation of Sub-SpaCE can be found in `./methods/SubSpaCECF.py`. This class uses auxiliary code that can be found under `./methods/SubSpaCE/`
